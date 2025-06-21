@@ -6,7 +6,7 @@
         "type": "go",
         "request": "launch",
         "mode": "auto",
-        "program": "${file}", // untuk debug file yang sedang dibuka
+        "program": "${workspaceFolder}", // untuk debug file yang sedang dibuka
         "env": {},
         "args": []
       }
