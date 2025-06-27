@@ -1,16 +1,19 @@
 package http
 
 import (
+	"github.com/NurilH/belajar-gin-gonic/module/users"
 	"github.com/gin-gonic/gin"
 )
 
 type UsersHTTPDelivery struct {
-	route *gin.RouterGroup
+	route        *gin.RouterGroup
+	usersService users.UsersService
 }
 
-func UsersNewDelivery(route *gin.RouterGroup) (routeGroup *gin.RouterGroup) {
+func UsersNewDelivery(route *gin.RouterGroup, usersService users.UsersService) (routeGroup *gin.RouterGroup) {
 	usersHTTPDelivery := UsersHTTPDelivery{
-		route: route,
+		route:        route,
+		usersService: usersService,
 	}
 
 	routeGroup = route.Group("/user")
@@ -31,8 +34,19 @@ func (u UsersHTTPDelivery) GetAllUsers(ctx *gin.Context) {
 		return
 	}
 
+	result, err := u.usersService.GetAllUsers(ctx)
+	if err != nil {
+		ctx.AbortWithStatusJSON(400, gin.H{
+			"message": "bad request",
+			"error":   err,
+		})
+		return
+
+	}
+
 	ctx.JSON(200, gin.H{
 		"message": "All Users",
+		"data":    result,
 	})
 
 }
