@@ -7,6 +7,6 @@ import (
 
 type (
 	UsersService interface {
-		GetAllUsers(ctx *gin.Context) (result model.Users, err error)
+		GetAllUsers(ctx *gin.Context) (result []model.Users, err error)
 	}
 )

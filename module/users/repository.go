@@ -8,6 +8,6 @@ import (
 
 type (
 	UsersRepository interface {
-		GetAllUsers(ctx context.Context) (user model.Users, err error)
+		GetAllUsers(ctx context.Context) (user []model.Users, err error)
 	}
 )

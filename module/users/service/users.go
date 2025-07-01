@@ -16,7 +16,7 @@ func NewUsersService(usersRepository users.UsersRepository) users.UsersService {
 	}
 }
 
-func (s usersService) GetAllUsers(ctx *gin.Context) (result model.Users, err error) {
+func (s usersService) GetAllUsers(ctx *gin.Context) (result []model.Users, err error) {
 	result, err = s.usersRepository.GetAllUsers(ctx.Request.Context())
 	return
 }

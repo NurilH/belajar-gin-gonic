@@ -8,6 +8,7 @@ import (
 	users "github.com/NurilH/belajar-gin-gonic/module/users/delivery/http"
 	usersRepository "github.com/NurilH/belajar-gin-gonic/module/users/repository/postgres"
 	usersService "github.com/NurilH/belajar-gin-gonic/module/users/service"
+	"github.com/NurilH/belajar-gin-gonic/pkg/common/middlewares"
 	"github.com/NurilH/belajar-gin-gonic/pkg/config"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -28,6 +29,7 @@ func main() {
 	api := router.Group("/api")
 	{
 		v1 := api.Group("/v1")
+		v1.Use(middlewares.AuthMiddleware)
 		{
 			InitModuleUsers(v1, db)
 
