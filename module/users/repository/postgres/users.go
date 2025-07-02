@@ -18,7 +18,12 @@ func NewUsersRepository(db *gorm.DB) users.UsersRepository {
 	}
 }
 
-func (r usersRepository) GetAllUsers(ctx context.Context) (user []model.Users, err error) {
+func (r usersRepository) GetAllUsers(ctx context.Context) (user []model.User, err error) {
 	err = r.db.WithContext(ctx).Find(&user).Error
+	return
+}
+
+func (r usersRepository) GetUserByEmail(ctx context.Context, email string) (user model.User, err error) {
+	err = r.db.First(&user).Where("email=?", email).Error
 	return
 }

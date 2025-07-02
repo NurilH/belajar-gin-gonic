@@ -4,54 +4,77 @@ import (
 	"net/http"
 
 	"github.com/NurilH/belajar-gin-gonic/model"
+	"github.com/NurilH/belajar-gin-gonic/module/authentications"
 	"github.com/gin-gonic/gin"
 )
 
 type AuthHTTPDelivery struct {
-	route *gin.RouterGroup
+	route   *gin.RouterGroup
+	service authentications.AuthenticationsService
 }
 
-func AuthNewDelivery(route *gin.RouterGroup) (routeGroup *gin.RouterGroup) {
+func AuthNewDelivery(route *gin.RouterGroup, service authentications.AuthenticationsService) (routeGroup *gin.RouterGroup) {
 	authHTTPDelivery := AuthHTTPDelivery{
-		route: route,
+		route:   route,
+		service: service,
 	}
 
 	routeGroup = route.Group("/")
 	{
-		routeGroup.POST("login", authHTTPDelivery.AuthLogin)
+		routeGroup.POST("login", authHTTPDelivery.Login)
+		routeGroup.POST("signup", authHTTPDelivery.SignUp)
 	}
 
 	return
 }
+func (a AuthHTTPDelivery) SignUp(c *gin.Context) {
+	var req model.SignUpRequest
 
-func (a AuthHTTPDelivery) AuthLogin(ctx *gin.Context) {
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid request",
+			"erorr":   err.Error(),
+		})
+		return
+	}
 
-	var req model.RequestLogin
+	err := a.service.SignUp(c, req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "error insert data",
+			"erorr":   err.Error(),
+		})
+		return
+	}
 
-	// if err := ctx.Bind(&req); err != nil {
-	// 	ctx.AbortWithStatusJSON(400, gin.H{
-	// 		"message": "erro login",
-	// 	})
-	// 	return
-	// }
+	c.JSON(http.StatusOK, gin.H{
+		"result": req,
+	})
 
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+}
+
+func (a AuthHTTPDelivery) Login(c *gin.Context) {
+
+	var req model.LoginRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
 
-	// if err := ctx.Validate(&req); err != nil {
-	// 	ctx.AbortWithStatusJSON(400, gin.H{
-	// 		"message": "erro login",
-	// 	})
-	// 	return
-	// }
+	result, err := a.service.Login(c, req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
-	ctx.AbortWithStatusJSON(200, gin.H{
-		"message": "berhasil login",
-		"payload": req,
+	c.AbortWithStatusJSON(200, gin.H{
+		"message":  "berhasil login",
+		"response": result,
 	})
 
 }

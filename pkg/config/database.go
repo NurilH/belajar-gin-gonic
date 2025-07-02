@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/NurilH/belajar-gin-gonic/model"
 	"github.com/NurilH/belajar-gin-gonic/pkg/common/constants"
 
 	"gorm.io/driver/postgres"
@@ -20,6 +21,7 @@ type Database struct {
 	MaxIdleTime       time.Duration
 	MaxOpenConnection int
 	MaxLifetime       time.Duration
+	AutoMigrate       bool
 }
 
 func NewDBGormV2(c *Config) (*gorm.DB, error) {
@@ -42,6 +44,13 @@ func newPostgresConnection(c *Database) (*gorm.DB, error) {
 		return nil, err
 	}
 
+	if c.AutoMigrate {
+		err = AutoMigrate(gormDB)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	sqlDB, err := gormDB.DB()
 	if err != nil {
 		return nil, err
@@ -52,4 +61,9 @@ func newPostgresConnection(c *Database) (*gorm.DB, error) {
 	sqlDB.SetConnMaxLifetime(c.MaxLifetime)
 
 	return gormDB, nil
+}
+
+func AutoMigrate(db *gorm.DB) (err error) {
+	err = db.AutoMigrate(&model.User{})
+	return err
 }

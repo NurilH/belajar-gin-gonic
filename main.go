@@ -5,6 +5,8 @@ import (
 	"log"
 
 	auth "github.com/NurilH/belajar-gin-gonic/module/authentications/delivery/http"
+	authRepository "github.com/NurilH/belajar-gin-gonic/module/authentications/repository/postgres"
+	authService "github.com/NurilH/belajar-gin-gonic/module/authentications/service"
 	users "github.com/NurilH/belajar-gin-gonic/module/users/delivery/http"
 	usersRepository "github.com/NurilH/belajar-gin-gonic/module/users/repository/postgres"
 	usersService "github.com/NurilH/belajar-gin-gonic/module/users/service"
@@ -33,7 +35,7 @@ func main() {
 		{
 			InitModuleUsers(v1, db)
 
-			InitModuleAuth(v1)
+			InitModuleAuth(v1, db)
 
 		}
 	}
@@ -41,9 +43,11 @@ func main() {
 	router.Run(fmt.Sprintf(":%s", conf.AppPort))
 }
 
-func InitModuleAuth(router *gin.RouterGroup) *gin.RouterGroup {
-
-	return auth.AuthNewDelivery(router)
+func InitModuleAuth(router *gin.RouterGroup, db *gorm.DB) *gin.RouterGroup {
+	userRepo := usersRepository.NewUsersRepository(db)
+	authRepo := authRepository.NewAuthRepository(db)
+	authSvc := authService.NewAuthService(authRepo, userRepo)
+	return auth.AuthNewDelivery(router, authSvc)
 }
 
 func InitModuleUsers(router *gin.RouterGroup, db *gorm.DB) *gin.RouterGroup {
