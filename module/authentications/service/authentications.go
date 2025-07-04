@@ -1,12 +1,13 @@
 package service
 
 import (
-	"os"
+	"net/http"
 	"time"
 
 	"github.com/NurilH/belajar-gin-gonic/model"
 	"github.com/NurilH/belajar-gin-gonic/module/authentications"
 	"github.com/NurilH/belajar-gin-gonic/module/users"
+	"github.com/NurilH/belajar-gin-gonic/pkg/config"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
@@ -47,18 +48,25 @@ func (a authenticationsService) Login(c *gin.Context, req model.LoginRequest) (r
 		return
 	}
 
+	// set time out JWT
+	timeout := config.EnvAsDuration("JWT_TIMEOUT", 30*time.Minute)
+	exp := time.Now().Add(timeout).Unix()
+
 	// Create the Claims
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"use_id": user.ID,
 		"email":  user.Email,
-		"exp":    time.Now().Add(time.Hour * 24 * 30).Unix(),
+		"exp":    exp,
 	})
 
 	// Sign and get the complete encoded token as a string using the secret
-	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
+	tokenString, err := token.SignedString([]byte(config.Env("SECRET_KEY")))
 	if err != nil {
 		return
 	}
+
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie("Authorization", tokenString, int(timeout.Seconds()), "", "", false, true)
 
 	result.Token = &tokenString
 	return
