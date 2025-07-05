@@ -24,6 +24,6 @@ func (r usersRepository) GetAllUsers(ctx context.Context) (user []model.User, er
 }
 
 func (r usersRepository) GetUserByEmail(ctx context.Context, email string) (user model.User, err error) {
-	err = r.db.First(&user).Where("email=?", email).Error
+	err = r.db.Where("email = ?", email).First(&user).Error
 	return
 }

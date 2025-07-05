@@ -54,9 +54,9 @@ func (a authenticationsService) Login(c *gin.Context, req model.LoginRequest) (r
 
 	// Create the Claims
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"use_id": user.ID,
-		"email":  user.Email,
-		"exp":    exp,
+		"user_id": user.ID,
+		"email":   user.Email,
+		"exp":     exp,
 	})
 
 	// Sign and get the complete encoded token as a string using the secret
