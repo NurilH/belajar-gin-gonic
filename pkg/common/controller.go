@@ -1,6 +1,9 @@
 package common
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/NurilH/belajar-gin-gonic/pkg/config"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -38,4 +41,31 @@ func (c *Controller) User(ctx *gin.Context) (result *UserInfo) {
 	} else {
 		return
 	}
+}
+
+func (c *Controller) BaseURL(ctx *gin.Context) string {
+	scheme := "http"
+	if ctx.Request.TLS != nil {
+		scheme = "https"
+	}
+
+	host := ctx.Request.Host
+	return fmt.Sprintf("%s://%s", scheme, host)
+}
+
+func (c *Controller) UnixFileName(prefix, fileType string) string {
+	if prefix == "" {
+		prefix = "file"
+	}
+
+	if fileType == "" {
+		fileType = ".jpg"
+	}
+
+	timeStr := fmt.Sprint(time.Now().Format("02012006_150405"))
+
+	fileName := prefix + "_" + timeStr + fileType
+
+	return fileName
+
 }

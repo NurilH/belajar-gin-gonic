@@ -7,6 +7,7 @@ import (
 	auth "github.com/NurilH/belajar-gin-gonic/module/authentications/delivery/http"
 	authRepository "github.com/NurilH/belajar-gin-gonic/module/authentications/repository/postgres"
 	authService "github.com/NurilH/belajar-gin-gonic/module/authentications/service"
+	document "github.com/NurilH/belajar-gin-gonic/module/documents/delivery/http"
 	users "github.com/NurilH/belajar-gin-gonic/module/users/delivery/http"
 	usersRepository "github.com/NurilH/belajar-gin-gonic/module/users/repository/postgres"
 	usersService "github.com/NurilH/belajar-gin-gonic/module/users/service"
@@ -28,14 +29,16 @@ func main() {
 		log.Fatal(err)
 	}
 
+	router.Static("/static", "./static")
+
 	api := router.Group("/api")
 	{
 		v1 := api.Group("/v1")
 		v1.Use(middlewares.AuthMiddleware)
 		{
-			InitModuleUsers(v1, db)
-
+			InitModuleDocuments(v1, db)
 			InitModuleAuth(v1, db)
+			InitModuleUsers(v1, db)
 
 		}
 	}
@@ -43,6 +46,12 @@ func main() {
 	router.Run(fmt.Sprintf(":%s", conf.AppPort))
 }
 
+func InitModuleDocuments(router *gin.RouterGroup, db *gorm.DB) *gin.RouterGroup {
+	// userRepo := usersRepository.NewUsersRepository(db)
+	// authRepo := authRepository.NewAuthRepository(db)
+	// authSvc := authService.NewAuthService(authRepo, userRepo)
+	return document.DocumentsNewDelivery(router)
+}
 func InitModuleAuth(router *gin.RouterGroup, db *gorm.DB) *gin.RouterGroup {
 	userRepo := usersRepository.NewUsersRepository(db)
 	authRepo := authRepository.NewAuthRepository(db)
