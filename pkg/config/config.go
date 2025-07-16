@@ -8,6 +8,7 @@ import (
 type Config struct {
 	AppPort string
 	MainDB  Database
+	Redis   Redis
 }
 
 func NewConfig() *Config {
@@ -23,6 +24,11 @@ func NewConfig() *Config {
 			MaxIdleTime:       EnvAsDuration("DB_POSTGRES_MAX_IDLE_TIME", 5*time.Minute),
 			MaxOpenConnection: EnvAsInt("DB_POSTGRES_MAX_OPEN_CONNECTION", 25),
 			MaxLifetime:       EnvAsDuration("DB_POSTGRES_MAX_LIFETIME", 5*time.Minute),
+		},
+		Redis: Redis{
+			Address:  os.Getenv("REDIS_ADDRESS"),
+			Password: os.Getenv("REDIS_PASSWORD"),
+			DB:       EnvAsInt("REDIS_DB", 0),
 		},
 	}
 }

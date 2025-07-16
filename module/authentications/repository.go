@@ -8,3 +8,8 @@ import (
 type AuthRepository interface {
 	SignUp(c *gin.Context, req model.SignUpRequest) error
 }
+
+type AuthRedisRepository interface {
+	Save(ctx *gin.Context, redisKey string, value string) error
+	GetKey(ctx *gin.Context, redisKey string) (res *model.LoginRespons, err error)
+}

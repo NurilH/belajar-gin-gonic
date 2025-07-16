@@ -1,5 +1,6 @@
 package constants
 
 const (
-	ClientKey = "Key-auth"
+	ClientKey     = "Key-auth"
+	KeyRedisLogin = "login:"
 )
