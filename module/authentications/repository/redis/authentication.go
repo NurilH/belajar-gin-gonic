@@ -19,8 +19,8 @@ func NewAuthRedisRepository(rc *redis.Client) authentications.AuthRedisRepositor
 	}
 }
 
-func (r authRedisRepository) Save(ctx *gin.Context, redisKey string, value string) error {
-	err := r.rc.Set(ctx, redisKey, value, 10*time.Minute).Err()
+func (r authRedisRepository) Save(ctx *gin.Context, redisKey string, value string, exp time.Duration) error {
+	err := r.rc.Set(ctx, redisKey, value, exp).Err()
 	return err
 }
 

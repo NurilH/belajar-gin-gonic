@@ -72,7 +72,8 @@ func (a authenticationsService) Login(c *gin.Context, req model.LoginRequest) (r
 			return result, err
 		}
 
-		errRedis := a.redisAuth.Save(c, constants.KeyRedisLogin+req.Email, tokenString)
+		redisExp := config.EnvAsDuration("REDIS_AUHT_EXP", 10*time.Minute)
+		errRedis := a.redisAuth.Save(c, constants.KeyRedisLogin+req.Email, tokenString, redisExp)
 		if errRedis != nil {
 			fmt.Errorf("Invalid save redis %w", errRedis)
 		}

@@ -1,6 +1,8 @@
 package authentications
 
 import (
+	"time"
+
 	"github.com/NurilH/belajar-gin-gonic/model"
 	"github.com/gin-gonic/gin"
 )
@@ -10,6 +12,6 @@ type AuthRepository interface {
 }
 
 type AuthRedisRepository interface {
-	Save(ctx *gin.Context, redisKey string, value string) error
+	Save(ctx *gin.Context, redisKey string, value string, exp time.Duration) error
 	GetKey(ctx *gin.Context, redisKey string) (res *model.LoginRespons, err error)
 }
