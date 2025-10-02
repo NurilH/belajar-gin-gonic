@@ -14,7 +14,7 @@ services:
       REDIS_ADDR: redis:6379
       REDIS_PASSWORD: ""  # isi jika pakai password
     volumes:
-      - ./certs:/etc/ssl/certs
+      - /home/ubuntu/certs:/app/certs
 
   db:
     image: postgres:15

@@ -53,7 +53,7 @@ func main() {
 		router.Run(fmt.Sprintf(":%s", conf.AppPort))
 	}()
 
-	router.RunTLS(":443", "/etc/ssl/certs/server.crt", "/etc/ssl/certs/server.key")
+	router.RunTLS(":443", "/app/certs/server.crt", "/app/certs/server.key")
 }
 
 func InitModuleDocuments(router *gin.RouterGroup, db *gorm.DB) *gin.RouterGroup {
