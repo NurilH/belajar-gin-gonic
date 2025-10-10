@@ -29,7 +29,7 @@ jobs:
       - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/artgon-key.pem
+          printf "%s" "${{ secrets.SSH_KEY }}" > ~/.ssh/artgon-key.pem
           chmod 600 ~/.ssh/artgon-key.pem
           ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
       
