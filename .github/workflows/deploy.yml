@@ -29,9 +29,9 @@ jobs:
       - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_KEY }}" | base64 --decode > ~/.ssh/artgon-key.pem
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/artgon-key.pem
           chmod 600 ~/.ssh/artgon-key.pem
-          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts.pem
+          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
       
       - name: Verify SSH file
         run: |
