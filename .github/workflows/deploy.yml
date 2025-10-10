@@ -32,12 +32,13 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_KEY }}" | tr -d '\r' > ~/.ssh/artgon-key.pem
           chmod 600 ~/.ssh/artgon-key.pem
-          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+
 
       # 🔍 Cek apakah file SSH sudah terbentuk
-      - name: Verify SSH file
+      - name: Debug SSH key first lines
         run: |
-          ls -la ~/.ssh
+          echo "First lines of SSH key:"
           head -n 5 ~/.ssh/artgon-key.pem || true
 
       # 🚀 Deploy langsung ke AWS
