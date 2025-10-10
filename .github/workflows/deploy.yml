@@ -26,23 +26,26 @@ jobs:
           push: true
           tags: nurilhuda7337/belajar-gin-gonic:latest
 
+      # 🔐 Setup SSH agar bisa remote ke server AWS
       - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
-          printf "%s" "${{ secrets.SSH_KEY }}" > ~/.ssh/artgon-key.pem
+          echo "${{ secrets.SSH_KEY }}" | tr -d '\r' > ~/.ssh/artgon-key.pem
           chmod 600 ~/.ssh/artgon-key.pem
           ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
-      
+
+      # 🔍 Cek apakah file SSH sudah terbentuk
       - name: Verify SSH file
         run: |
           ls -la ~/.ssh
           head -n 5 ~/.ssh/artgon-key.pem || true
 
+      # 🚀 Deploy langsung ke AWS
       - name: Deploy to AWS Server
         run: |
-          ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
-          cd ~/repo/belajar-gin-gonic$
-          sudo docker pull nurilhuda7337/belajar-gin-gonic:latest
-          sudo docker compose down
-          sudo docker compose up -d --build
+          ssh -i ~/.ssh/artgon-key.pem -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
+            cd ~/repo/belajar-gin-gonic
+            sudo docker pull nurilhuda7337/belajar-gin-gonic:latest
+            sudo docker compose down
+            sudo docker compose up -d --build
           EOF
