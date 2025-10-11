@@ -24,7 +24,7 @@ func UsersNewDelivery(route *gin.RouterGroup, usersService users.UsersService) (
 	{
 		routeGroup.GET("", usersHTTPDelivery.GetAllUsers)
 		routeGroup.GET("/detail", usersHTTPDelivery.GetDetailUser)
-		routeGroup.GET("/:id", usersHTTPDelivery.GetDetailUser)
+		routeGroup.GET("/:id", usersHTTPDelivery.GetUserByID)
 	}
 
 	return
@@ -43,7 +43,7 @@ func (u UsersHTTPDelivery) GetAllUsers(ctx *gin.Context) {
 	if err != nil {
 		ctx.AbortWithStatusJSON(400, gin.H{
 			"message": "bad request",
-			"error":   err,
+			"error":   err.Error(),
 		})
 		return
 
@@ -73,7 +73,7 @@ func (u UsersHTTPDelivery) GetUserByID(ctx *gin.Context) {
 	if err != nil {
 		ctx.AbortWithStatusJSON(400, gin.H{
 			"message": "err convert",
-			"error":   err,
+			"error":   err.Error(),
 		})
 		return
 
@@ -83,7 +83,7 @@ func (u UsersHTTPDelivery) GetUserByID(ctx *gin.Context) {
 	if err != nil {
 		ctx.AbortWithStatusJSON(400, gin.H{
 			"message": "bad request",
-			"error":   err,
+			"error":   err.Error(),
 		})
 		return
 
