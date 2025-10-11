@@ -8,5 +8,6 @@ import (
 type (
 	UsersService interface {
 		GetAllUsers(ctx *gin.Context) (result []model.User, err error)
+		GetUserByID(ctx *gin.Context, id int) (result model.User, err error)
 	}
 )

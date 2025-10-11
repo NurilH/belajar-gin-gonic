@@ -20,3 +20,7 @@ func (s usersService) GetAllUsers(ctx *gin.Context) (result []model.User, err er
 	result, err = s.usersRepository.GetAllUsers(ctx.Request.Context())
 	return
 }
+func (s usersService) GetUserByID(ctx *gin.Context, id int) (result model.User, err error) {
+	result, err = s.usersRepository.GetUserByID(ctx.Request.Context(), id)
+	return
+}

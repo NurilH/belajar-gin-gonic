@@ -27,3 +27,7 @@ func (r usersRepository) GetUserByEmail(ctx context.Context, email string) (user
 	err = r.db.Where("email = ?", email).First(&user).Error
 	return
 }
+func (r usersRepository) GetUserByID(ctx context.Context, id int) (user model.User, err error) {
+	err = r.db.Where("id = ?", id).First(&user).Error
+	return
+}
