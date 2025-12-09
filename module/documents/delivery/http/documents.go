@@ -44,7 +44,7 @@ func (h *DocumentsHTTPDelivery) UploadDocument(ctx *gin.Context) {
 
 	// fileType := file.Header.Get("content-type")
 	unixName := h.UnixFileName("", filepath.Ext(file.Filename))
-	fileDir := fmt.Sprintf("/static/file/%s", unixName)
+	fileDir := fmt.Sprintf("/repo/belajar-gin-gonic/static/file/%s", unixName)
 	err = ctx.SaveUploadedFile(file, "."+fileDir)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
