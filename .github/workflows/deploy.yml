@@ -45,7 +45,6 @@ jobs:
       - name: Deploy to AWS Server
         run: |
           ssh -i ~/.ssh/artgon-key.pem -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
-            cd ~/repo/belajar-gin-gonic
             sudo docker pull nurilhuda7337/belajar-gin-gonic:latest
             sudo docker compose down
             sudo docker compose up -d --build
