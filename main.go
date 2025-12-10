@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strings"
 
 	auth "github.com/NurilH/belajar-gin-gonic/module/authentications/delivery/http"
 	authRepository "github.com/NurilH/belajar-gin-gonic/module/authentications/repository/postgres"
@@ -64,16 +63,16 @@ func main() {
 		}
 	}
 
-	if strings.ToUpper(conf.AppEnv) == "LOCAL" {
+	// if strings.ToUpper(conf.AppEnv) == "LOCAL" {
+	// 	router.Run(fmt.Sprintf(":%s", conf.AppPort))
+
+	// } else {
+	go func() {
 		router.Run(fmt.Sprintf(":%s", conf.AppPort))
+	}()
 
-	} else {
-		go func() {
-			router.Run(fmt.Sprintf(":%s", conf.AppPort))
-		}()
-
-		router.RunTLS(":443", "/app/certs/server.crt", "/app/certs/server.key")
-	}
+	router.RunTLS(":443", "/app/certs/server.crt", "/app/certs/server.key")
+	// }
 
 }
 
