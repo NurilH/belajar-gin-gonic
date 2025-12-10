@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
+	"strings"
 
 	auth "github.com/NurilH/belajar-gin-gonic/module/authentications/delivery/http"
 	authRepository "github.com/NurilH/belajar-gin-gonic/module/authentications/repository/postgres"
@@ -12,6 +14,7 @@ import (
 	users "github.com/NurilH/belajar-gin-gonic/module/users/delivery/http"
 	usersRepository "github.com/NurilH/belajar-gin-gonic/module/users/repository/postgres"
 	usersService "github.com/NurilH/belajar-gin-gonic/module/users/service"
+	"github.com/NurilH/belajar-gin-gonic/pkg/common/helpers"
 	"github.com/NurilH/belajar-gin-gonic/pkg/common/middlewares"
 	"github.com/NurilH/belajar-gin-gonic/pkg/config"
 	"github.com/gin-gonic/gin"
@@ -33,9 +36,21 @@ func main() {
 		log.Fatal(err)
 	}
 
+	staticDir := helpers.GetStaticDir()
+
 	router := gin.Default()
 
-	router.Static("/static", "./static")
+	router.Static("/static", staticDir)
+
+	router.GET("/debug/paths", func(c *gin.Context) {
+		wd, _ := os.Getwd()
+		c.JSON(200, gin.H{
+			"working_dir": wd,
+			"static_dir":  staticDir,
+			"exists":      dirExists(staticDir),
+			"files":       listFiles(staticDir),
+		})
+	})
 
 	api := router.Group("/api")
 	{
@@ -49,11 +64,16 @@ func main() {
 		}
 	}
 
-	go func() {
+	if strings.ToUpper(conf.AppEnv) == "LOCAL" {
 		router.Run(fmt.Sprintf(":%s", conf.AppPort))
-	}()
+	} else {
+		go func() {
+			router.Run(fmt.Sprintf(":%s", conf.AppPort))
+		}()
 
-	router.RunTLS(":443", "/app/certs/server.crt", "/app/certs/server.key")
+		router.RunTLS(":443", "/app/certs/server.crt", "/app/certs/server.key")
+	}
+
 }
 
 func InitModuleDocuments(router *gin.RouterGroup, db *gorm.DB) *gin.RouterGroup {
@@ -75,4 +95,22 @@ func InitModuleUsers(router *gin.RouterGroup, db *gorm.DB) *gin.RouterGroup {
 	userSvc := usersService.NewUsersService(userRepo)
 
 	return users.UsersNewDelivery(router, userSvc)
+}
+
+func dirExists(path string) bool {
+	_, err := os.Stat(path)
+	return !os.IsNotExist(err)
+}
+
+func listFiles(dir string) []string {
+	files, err := os.ReadDir(dir)
+	if err != nil {
+		return []string{}
+	}
+
+	var fileList []string
+	for _, file := range files {
+		fileList = append(fileList, file.Name())
+	}
+	return fileList
 }

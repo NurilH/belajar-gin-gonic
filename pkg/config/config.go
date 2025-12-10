@@ -6,6 +6,7 @@ import (
 )
 
 type Config struct {
+	AppEnv  string
 	AppPort string
 	MainDB  Database
 	Redis   Redis
@@ -13,6 +14,7 @@ type Config struct {
 
 func NewConfig() *Config {
 	return &Config{
+		AppEnv:  os.Getenv("APP_ENV"),
 		AppPort: os.Getenv("APP_PORT"),
 		MainDB: Database{
 			Host:              os.Getenv("DB_POSTGRES_HOST"),

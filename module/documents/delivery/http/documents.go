@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/NurilH/belajar-gin-gonic/pkg/common"
+	"github.com/NurilH/belajar-gin-gonic/pkg/common/helpers"
 	"github.com/gin-gonic/gin"
 )
 
@@ -42,22 +43,35 @@ func (h *DocumentsHTTPDelivery) UploadDocument(ctx *gin.Context) {
 		return
 	}
 
-	// fileType := file.Header.Get("content-type")
+	pathUpload := helpers.GetUploadDir()
 	unixName := h.UnixFileName("", filepath.Ext(file.Filename))
-	fileDir := fmt.Sprintf("/static/file/%s", unixName)
-	err = ctx.SaveUploadedFile(file, "."+fileDir)
+	filePath := fmt.Sprint(pathUpload + "/" + unixName)
+
+	if err := os.MkdirAll(pathUpload, 0755); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "failed to create upload directory",
+			"error":   err.Error(),
+			"path":    pathUpload,
+		})
+	}
+
+	err = ctx.SaveUploadedFile(file, filePath)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "Failed To Save File",
 			"error":   err.Error(),
+			"path":    pathUpload,
 		})
 		return
 	}
 
-	url := h.BaseURL(ctx) + fileDir
+	url := h.BaseURL(ctx) + filePath
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Success Upload",
-		"path":    url,
+		"message":    "Success Upload",
+		"filename":   unixName,
+		"path":       filePath,
+		"url":        url,
+		"upload_dir": pathUpload,
 	})
 }
 
@@ -70,7 +84,7 @@ func (h *DocumentsHTTPDelivery) DeleteDocument(ctx *gin.Context) {
 		return
 	}
 
-	err := os.Remove("./static/file/" + fileName)
+	err := os.Remove(helpers.GetUploadDir() + "/" + fileName)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "Failed Remove Document",
@@ -93,7 +107,7 @@ func (h *DocumentsHTTPDelivery) BulkDeleteDocument(ctx *gin.Context) {
 	}
 
 	for _, name := range fileName {
-		err := os.Remove("./static/file/" + name)
+		err := os.Remove(helpers.GetUploadDir() + "/" + name)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
 				"message": "Failed Remove Document",

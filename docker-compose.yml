@@ -10,11 +10,16 @@ services:
       - "8080:8080"
       - "443:443"
     environment:
+      APP_ENV: PROD
+      UPLOAD_DIR: "./static/file"
+      STATIC_DIR: "./static"
       DATABASE_URL: postgres://postgres:7@db:5432/postgres?sslmode=disable
       REDIS_ADDR: redis:6379
       REDIS_PASSWORD: ""  # isi jika pakai password
     volumes:
       - /home/ubuntu/certs:/app/certs
+      - .:/app  # Mount semua code untuk hot reload
+      - ./static/file:/app/static/file  # Uploads persistent
 
   db:
     image: postgres:15
