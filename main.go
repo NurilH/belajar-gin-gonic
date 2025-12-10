@@ -40,7 +40,7 @@ func main() {
 
 	router := gin.Default()
 
-	router.Static("/static", staticDir)
+	router.Static(staticDir, staticDir)
 
 	router.GET("/debug/paths", func(c *gin.Context) {
 		wd, _ := os.Getwd()
