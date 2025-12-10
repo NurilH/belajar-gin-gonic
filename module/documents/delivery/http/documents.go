@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/NurilH/belajar-gin-gonic/model"
 	"github.com/NurilH/belajar-gin-gonic/pkg/common"
 	"github.com/NurilH/belajar-gin-gonic/pkg/common/helpers"
 	"github.com/gin-gonic/gin"
@@ -27,6 +28,7 @@ func DocumentsNewDelivery(route *gin.RouterGroup) (routeGroup *gin.RouterGroup) 
 		routeGroup.DELETE("/:file_name", documentsHTTPDelivery.DeleteDocument)
 	}
 	route.DELETE("/documents", documentsHTTPDelivery.BulkDeleteDocument)
+	route.GET("/documents", documentsHTTPDelivery.ListDocuments)
 
 	return
 }
@@ -120,4 +122,30 @@ func (h *DocumentsHTTPDelivery) BulkDeleteDocument(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Success Delete Document",
 	})
+}
+
+func (h *DocumentsHTTPDelivery) ListDocuments(ctx *gin.Context) {
+
+	files, err := os.ReadDir(helpers.GetUploadDir())
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to read upload file",
+			"error":   err.Error(),
+		})
+	}
+
+	var documents []model.DocumentInfo
+	baseUrl := h.BaseURL(ctx)
+
+	for _, file := range files {
+		fileName := file.Name()
+
+		doc := model.DocumentInfo{
+			Filename: fileName,
+			URL:      baseUrl + helpers.GetUploadDir() + "/" + fileName,
+		}
+		documents = append(documents, doc)
+	}
+
+	ctx.JSON(http.StatusOK, documents)
 }
