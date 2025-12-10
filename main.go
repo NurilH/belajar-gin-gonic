@@ -66,6 +66,7 @@ func main() {
 
 	if strings.ToUpper(conf.AppEnv) == "LOCAL" {
 		router.Run(fmt.Sprintf(":%s", conf.AppPort))
+
 	} else {
 		go func() {
 			router.Run(fmt.Sprintf(":%s", conf.AppPort))
