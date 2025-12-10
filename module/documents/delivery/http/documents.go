@@ -134,6 +134,14 @@ func (h *DocumentsHTTPDelivery) ListDocuments(ctx *gin.Context) {
 		})
 	}
 
+	if len(files) <= 0 {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"message": http.StatusText(404),
+		})
+
+		return
+	}
+
 	var documents []model.DocumentInfo
 	baseUrl := h.BaseURL(ctx)
 
